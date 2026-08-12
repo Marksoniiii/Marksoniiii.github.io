@@ -4,7 +4,7 @@ export default defineAstroPaperConfig({
   site: {
     url: "https://marksoniiii.github.io/",
     title: "Markson's Blog",
-    description: "记录一些自己的碎碎念。",
+    description: "Markson 的个人数字花园，记录学习、实验与生活中的未完成思考。",
     author: "Markson",
     profile: "https://marksoniiii.github.io/",
     ogImage: "default-og.jpg",
@@ -16,7 +16,7 @@ export default defineAstroPaperConfig({
   posts: {
     perPage: 6,
     perIndex: 4,
-    scheduledPostMargin: 15 * 60 * 1000,
+    scheduledPostMargin: 0,
   },
 
   features: {

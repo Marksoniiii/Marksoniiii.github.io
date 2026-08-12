@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getPostUrl } from "@/utils/getPostPaths";
 import { toTransitionName } from "@/utils/toTransitionName";
 import Datetime from "./Datetime.astro";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 
 type Props = {
   variant?: "h2" | "h3";
@@ -10,22 +11,35 @@ type Props = {
 
 const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 
-const { title, description, ...props } = data;
+const { title, description, tags, ...props } = data;
 ---
 
-<li class="my-6">
-  <a
-    href={getPostUrl(id, filePath, Astro.currentLocale)}
-    class:list={[
-      "text-accent inline-block text-lg font-medium",
-      "decoration-dashed underline-offset-4 hover:underline",
-      "focus-visible:no-underline focus-visible:underline-offset-0",
-    ]}
-  >
-    <Heading transition:name={toTransitionName(title)}>
-      {title}
-    </Heading>
-  </a>
-  <Datetime {...props} />
-  <p>{description}</p>
+<li class="article-card group">
+  <Datetime {...props} class="pt-0.5 font-mono" />
+  <div>
+    <a
+      href={getPostUrl(id, filePath, Astro.currentLocale)}
+      class="focus-visible:outline-accent inline-block rounded-sm focus-visible:outline-2"
+    >
+      <Heading
+        transition:name={toTransitionName(title)}
+        class="font-display text-foreground group-hover:text-accent text-2xl leading-tight tracking-[-0.025em] transition-colors sm:text-[1.7rem]"
+      >
+        {title}
+      </Heading>
+    </a>
+    <p class="text-muted-foreground mt-2 max-w-2xl leading-7">{description}</p>
+    {
+      tags?.length > 0 && (
+        <div class="text-muted-foreground mt-4 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs">
+          {tags.slice(0, 3).map(tag => (
+            <span>#{tag}</span>
+          ))}
+        </div>
+      )
+    }
+  </div>
+  <span class="article-card__arrow" aria-hidden="true">
+    <IconArrowRight class="size-5" />
+  </span>
 </li>

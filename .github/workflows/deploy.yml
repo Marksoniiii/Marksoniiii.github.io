@@ -1,40 +1,126 @@
-name: Deploy to GitHub Pages
+name: Build and deploy
 
 on:
   push:
-    branches:
-      - main
-
+    branches: [main]
+  schedule:
+    # Avoid the top of the hour, when GitHub Actions schedules are busiest.
+    - cron: "17,47 * * * *"
   workflow_dispatch:
+    inputs:
+      ref:
+        description: Commit SHA, tag or branch to deploy (leave empty for current main)
+        required: false
+        type: string
+      payload:
+        description: Optional Pages CMS context
+        required: false
+        type: string
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
 
+jobs:
+  gate:
+    name: Decide whether a build is needed
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.decision.outputs.deploy }}
+      target_ref: ${{ steps.target.outputs.target_ref }}
     steps:
-      - name: Checkout repository
+      - name: Resolve target revision
+        id: target
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_REF: ${{ inputs.ref }}
+          EVENT_SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_REF" ]; then
+            echo "target_ref=$INPUT_REF" >> "$GITHUB_OUTPUT"
+          else
+            echo "target_ref=$EVENT_SHA" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout target revision
         uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.target.outputs.target_ref }}
+          # The push may contain multiple commits; the gate compares against the
+          # event's exact before SHA to distinguish private-only content changes.
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.16.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Decide whether production output changes
+        id: decision
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://marksoniiii.github.io/' }}
+        run: |
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            node scripts/content.mjs scheduled-due "$SITE_URL"
+          elif [ "$EVENT_NAME" = "push" ]; then
+            node scripts/content.mjs deploy-needed "$BEFORE_SHA"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: Validate and build
+    if: github.event_name != 'schedule' || needs.gate.outputs.deploy == 'true'
+    needs: gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout requested revision
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.gate.outputs.target_ref }}
 
       - name: Build and upload Astro site
         uses: withastro/action@v6
         with:
-          node-version: 24
+          node-version: 24.16.0
           package-manager: npm
 
   deploy:
-    needs: build
+    name: Deploy GitHub Pages
+    if: needs.gate.outputs.deploy == 'true'
+    needs: [gate, build]
     runs-on: ubuntu-latest
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy artifact
         id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Verify the live site
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          curl --fail --location --retry 5 --retry-delay 5 "$PAGE_URL"
+          curl --fail --location --retry 5 --retry-delay 5 "${PAGE_URL%/}/rss.xml"
+
+      - name: Write deployment summary
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          TARGET_REF: ${{ needs.gate.outputs.target_ref }}
+        run: |
+          echo "## Deployment complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "- URL: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Source: \`$TARGET_REF\`" >> "$GITHUB_STEP_SUMMARY"

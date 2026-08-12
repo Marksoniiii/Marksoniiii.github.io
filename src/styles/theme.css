@@ -7,28 +7,38 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --font-app: var(--font-google-sans-code);
+  --color-surface: var(--surface);
+  --font-app: var(--font-body);
+  --font-display: var(--font-display-family);
+  --font-mono:
+    "SFMono-Regular", Consolas, "Liberation Mono", "PingFang SC", monospace;
 }
 
 /* Light theme values */
 :root,
 [data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
+  --background: #f3f1ea;
+  --foreground: #171914;
+  --accent: #315ee7;
   --accent-foreground: #ffffff;
-  --muted: #e6e6e6;
-  --muted-foreground: #6b7280;
-  --border: #ece9e9;
+  --muted: #e7e4da;
+  --muted-foreground: #65685f;
+  --border: #d5d1c5;
+  --surface: #faf9f5;
+  --font-body:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display-family: Georgia, "Noto Serif SC", "Songti SC", serif;
 }
 
 /* Dark theme values */
 [data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
+  --background: #12140f;
+  --foreground: #edeee7;
+  --accent: #89a8ff;
   --accent-foreground: #ffffff;
-  --muted: #343f60;
-  --muted-foreground: #afb9ca;
-  --border: #ab4b08;
+  --muted: #22251e;
+  --muted-foreground: #a6aa9e;
+  --border: #34382e;
+  --surface: #191c16;
 }

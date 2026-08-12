@@ -1,0 +1,39 @@
+name: Validate content
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: Pages CMS action context
+        required: false
+        default: "{}"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate CMS content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.16.0
+          cache: npm
+      - run: npm ci
+      - run: npm run content:check
+      - run: npm run build
+      - name: Record CMS context
+        env:
+          PAYLOAD: ${{ inputs.payload }}
+        run: |
+          echo "## Content validation passed" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          echo "$PAYLOAD" | jq . >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

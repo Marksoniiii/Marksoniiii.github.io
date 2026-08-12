@@ -1,0 +1,179 @@
+media:
+  - name: post_images
+    label: 文章图片
+    input: public/images/posts
+    output: /images/posts
+    rename: safe
+    extensions: [avif, gif, jpeg, jpg, png, svg, webp]
+    categories: [image]
+    commit:
+      templates:
+        create: "media: add {filename}"
+        update: "media: update {filename}"
+        delete: "media: remove {filename}"
+        rename: "media: rename {oldFilename} to {newFilename}"
+
+content:
+  - name: posts
+    label: 博客文章
+    type: collection
+    path: src/content/posts
+    format: yaml-frontmatter
+    subfolders: false
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      fields: [title, draft, pubDatetime, featured]
+      primary: title
+      sort: [pubDatetime, title]
+      search: [title, description, tags]
+      default:
+        sort: pubDatetime
+        order: desc
+    operations:
+      create: true
+      rename: false
+      delete: false
+    commit:
+      identity: user
+      templates:
+        create: "content: create {filename}"
+        update: "content: update {filename}"
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+        options:
+          minlength: 1
+          maxlength: 120
+      - name: description
+        label: 摘要
+        type: text
+        required: true
+        description: 用于文章列表、搜索结果和社交分享，建议 30–120 字。
+        options:
+          minlength: 1
+          maxlength: 240
+      - name: pubDatetime
+        label: 发布时间
+        type: date
+        required: true
+        options:
+          time: true
+          format: yyyy-MM-dd'T'HH:mm:ssxxx
+      - name: modDatetime
+        label: 最后更新时间
+        type: date
+        default: ""
+        description: 只有文章内容有实质更新时才填写。
+        options:
+          time: true
+          format: yyyy-MM-dd'T'HH:mm:ssxxx
+      - name: draft
+        label: 草稿
+        type: boolean
+        default: true
+        description: 保持开启时不会生成公开页面、RSS 或搜索结果。
+      - name: featured
+        label: 首页精选
+        type: boolean
+        default: false
+      - name: tags
+        label: 标签
+        type: string
+        required: true
+        list:
+          min: 1
+      - name: ogImage
+        label: 分享封面
+        type: image
+        description: 可选。推荐 1200×630，文件不超过 5 MiB。
+        options:
+          media: post_images
+          path: public/images/posts
+          extensions: [avif, jpeg, jpg, png, webp]
+          rename: safe
+      - name: canonicalURL
+        label: 原文地址
+        type: string
+        description: 仅转载或同步发布时填写完整 URL。
+      - name: hideEditPost
+        label: 隐藏“编辑此页”
+        type: boolean
+        default: false
+      - name: body
+        label: 正文
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          switcher: true
+          media: post_images
+          path: public/images/posts
+          extensions: [avif, gif, jpeg, jpg, png, svg, webp]
+          rename: safe
+    actions:
+      - name: validate-content
+        label: 检查全部文章
+        scope: collection
+        workflow: content-action.yml
+        ref: current
+        confirm: false
+      - name: validate-post
+        label: 检查这篇文章
+        scope: entry
+        workflow: content-action.yml
+        ref: current
+        confirm:
+          title: 检查这篇文章？
+          message: 系统会检查全部内容并执行一次生产构建，但不会修改文章状态。
+          button: 开始检查
+
+  - name: about
+    label: 关于页面
+    type: file
+    path: src/content/pages/about.md
+    format: yaml-frontmatter
+    operations:
+      create: false
+      rename: false
+      delete: false
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+      - name: description
+        label: 摘要
+        type: text
+      - name: body
+        label: 正文
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          switcher: true
+          media: post_images
+
+settings:
+  content:
+    merge: true
+  commit:
+    identity: user
+    templates:
+      create: "content: create {path}"
+      update: "content: update {path}"
+      delete: "content: remove {path}"
+      rename: "content: rename {oldPath} to {newPath}"
+
+actions:
+  - name: deploy-site
+    label: 重新部署网站
+    workflow: deploy.yml
+    ref: current
+    confirm:
+      title: 重新部署网站？
+      message: 将使用当前分支最新内容执行完整检查和生产部署。
+      button: 开始部署

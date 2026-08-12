@@ -111,32 +111,38 @@ const ogImage = ogImageUrl
     class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
     data-pagefind-body
   >
-    <h1
-      style={{ viewTransitionName: toTransitionName(title) }}
-      class="text-accent inline-block text-2xl font-bold sm:text-3xl"
-    >
-      {title}
-    </h1>
-
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
-      <span
-        aria-hidden="true"
-        class:list={[
-          "text-muted-foreground max-sm:hidden",
-          { hidden: !config.features.editPost?.enabled || hideEditPost },
-        ]}
+    <header class="border-border mt-6 border-b pb-9 sm:mt-10 sm:pb-12">
+      <span class="eyebrow">ARTICLE / MARKSON</span>
+      <h1
+        style={{ viewTransitionName: toTransitionName(title) }}
+        class="display-title mt-4 max-w-4xl text-4xl leading-[1.08] sm:text-6xl"
       >
-        |
-      </span>
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
-    </div>
+        {title}
+      </h1>
+      <p class="text-muted-foreground mt-5 max-w-2xl text-lg leading-8">
+        {description}
+      </p>
+
+      <div class="mt-6 flex items-center gap-2">
+        <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+        <span
+          aria-hidden="true"
+          class:list={[
+            "text-muted-foreground max-sm:hidden",
+            { hidden: !config.features.editPost?.enabled || hideEditPost },
+          ]}
+        >
+          |
+        </span>
+        <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+      </div>
+    </header>
 
     <article
       id="article"
       class:list={[
-        "mt-8 w-full",
-        "app-prose max-w-app",
+        "mx-auto mt-10 w-full sm:mt-14",
+        "app-prose",
         "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
       ]}
     >

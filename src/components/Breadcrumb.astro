@@ -30,6 +30,7 @@ const navLabels: Record<string, string> = {
   about: t.nav.about,
   archives: t.nav.archives,
   search: t.nav.search,
+  subscribe: "订阅更新",
 };
 
 // if breadcrumb is Home > Posts > [page] <etc>
@@ -57,7 +58,7 @@ if (breadcrumbList[0] === "tags" && !isNaN(Number(breadcrumbList[2]))) {
 }
 ---
 
-<nav class="app-layout mt-8 mb-1" aria-label="breadcrumb">
+<nav class="app-layout mt-8 mb-1 font-mono text-xs" aria-label="breadcrumb">
   <ul
     class="flex flex-wrap items-center gap-x-1 font-light [&>li:not(:last-child)>a]:hover:opacity-100"
   >
@@ -65,7 +66,7 @@ if (breadcrumbList[0] === "tags" && !isNaN(Number(breadcrumbList[2]))) {
       <a href={getRelativeLocaleUrl(locale, "")} class="opacity-80">
         {t.nav.home}
       </a>
-      <span aria-hidden="true" class="opacity-80">&raquo;</span>
+      <span aria-hidden="true" class="text-accent opacity-80">/</span>
     </li>
     {
       breadcrumbList.map((breadcrumb, index) =>
@@ -87,8 +88,8 @@ if (breadcrumbList[0] === "tags" && !isNaN(Number(breadcrumbList[2]))) {
             >
               {navLabels[breadcrumb] ?? decodeSegment(breadcrumb)}
             </a>
-            <span aria-hidden="true" class="opacity-70">
-              &raquo;
+            <span aria-hidden="true" class="text-accent opacity-70">
+              /
             </span>
           </li>
         )

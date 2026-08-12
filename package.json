@@ -3,11 +3,19 @@
   "type": "module",
   "version": "6.1.0",
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.22.3 || ^24.16.0 || >=26.3.0"
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist",
+    "build": "npm run check && astro build && pagefind --site dist",
+    "check": "npm run content:check && astro check",
+    "content:check": "node scripts/content.mjs check",
+    "post:new": "node scripts/content.mjs new",
+    "post:prepare": "node scripts/content.mjs prepare",
+    "post:publish": "node scripts/content.mjs publish",
+    "post:schedule": "node scripts/content.mjs schedule",
+    "post:status": "node scripts/content.mjs status",
+    "post:update": "node scripts/content.mjs update",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",
@@ -16,6 +24,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^7.2.0",
     "@astrojs/mdx": "^7.0.0",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.3",
@@ -23,7 +32,6 @@
     "astro": "^7.0.3",
     "dayjs": "^1.11.21",
     "lodash.kebabcase": "^4.1.1",
-    "@astrojs/markdown-remark": "^7.2.0",
     "rehype-callouts": "^2.2.0",
     "remark-collapse": "^0.1.2",
     "remark-toc": "^9.0.0",
@@ -41,6 +49,7 @@
     "@typescript-eslint/parser": "^8.62.0",
     "eslint": "^10.6.0",
     "eslint-plugin-astro": "^2.1.1",
+    "js-yaml": "^5.2.3",
     "pagefind": "^1.5.2",
     "prettier": "3.9.3",
     "prettier-plugin-astro": "0.14.1",

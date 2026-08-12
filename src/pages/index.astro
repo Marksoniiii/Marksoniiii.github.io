@@ -10,6 +10,7 @@ import Socials from "@/components/Socials.astro";
 import Card from "@/components/Card.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
+import { getUniqueTags } from "@/utils/getUniqueTags";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
 
@@ -22,7 +23,11 @@ const posts = await getCollection("posts");
 const sortedPosts = getSortedPosts(posts);
 const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
 const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
+const uniqueTags = getUniqueTags(sortedPosts);
 const homePath = getRelativeLocaleUrl(locale, "");
+const postsPath = getRelativeLocaleUrl(locale, "posts");
+const aboutPath = getRelativeLocaleUrl(locale, "about");
+const rssPath = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`;
 ---
 
 <Layout>
@@ -33,60 +38,130 @@ const homePath = getRelativeLocaleUrl(locale, "");
     data-home-path={homePath}
     class="app-layout"
   >
-    <section id="hero" class="border-border border-b pt-8 pb-6">
-      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        Hello World!
-      </h1>
-      <a
-        target="_blank"
-        href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`}
-        class="inline-block"
-        aria-label="RSS Feed"
-        title="RSS Feed"
-      >
-        <IconRss
-          width={20}
-          height={20}
-          class="stroke-accent scale-125 stroke-3 rtl:-rotate-90"
-        />
-        <span class="sr-only">RSS Feed</span>
-      </a>
-
-      <p>Nothing is impossible.</p>
-      <p class="mt-2">
-        Read the blog posts or check{" "}
-        <LinkButton
-          class="hover:text-accent underline decoration-dashed underline-offset-4"
-          href="https://github.com/satnaing/astro-paper#readme"
+    <section
+      class="grid min-h-[38rem] min-w-0 items-center gap-12 py-16 sm:py-24 lg:grid-cols-[1.35fr_0.65fr] lg:py-28"
+    >
+      <div class="reveal min-w-0">
+        <div class="eyebrow flex items-center gap-3">
+          <span class="bg-accent h-px w-8"></span>
+          PERSONAL DIGITAL GARDEN · 2026
+        </div>
+        <h1
+          class="display-title mt-6 max-w-4xl text-[clamp(3rem,9vw,7.4rem)] leading-[0.92]"
         >
-          README
-        </LinkButton>{" "}
-        for more info.
-      </p>
-      {
-        socials.length > 0 && (
-          <div class="mt-4 flex max-sm:flex-col sm:items-center">
-            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
-              {t.home.socialLinks}:
-            </div>
-            <Socials />
+          把思考，<br />留在<span class="text-accent italic">时间</span>里。
+        </h1>
+        <p
+          class="text-muted-foreground mt-8 max-w-xl text-base leading-8 sm:text-lg"
+        >
+          你好，我是 Markson。这里收集学习路上的笔记、正在发生的实验，
+          以及那些不想让它们轻易消失的生活片段。
+        </p>
+        <div class="mt-9 flex flex-wrap items-center gap-3">
+          <LinkButton href={postsPath} class="button-primary">
+            开始阅读
+            <IconArrowRight class="size-4" />
+          </LinkButton>
+          <LinkButton href={aboutPath} class="button-secondary"
+            >关于我</LinkButton
+          >
+          <a
+            href={rssPath}
+            class="text-muted-foreground hover:text-accent ms-1 flex size-11 items-center justify-center rounded-full transition-colors"
+            aria-label="RSS Feed"
+            title="订阅 RSS"
+          >
+            <IconRss class="size-5 stroke-current" />
+          </a>
+        </div>
+      </div>
+
+      <aside
+        class="paper-panel reveal reveal-delay-1 relative min-h-96 overflow-hidden rounded-[2rem] p-7 sm:p-9"
+      >
+        <div
+          class="border-border flex items-center justify-between border-b pb-5"
+        >
+          <span class="eyebrow">CURRENTLY / NOW</span>
+          <span class="flex items-center gap-2 text-xs">
+            <span class="relative flex size-2">
+              <span
+                class="bg-accent absolute inline-flex size-full animate-ping rounded-full opacity-60"
+              ></span>
+              <span class="bg-accent relative inline-flex size-2 rounded-full"
+              ></span>
+            </span>
+            持续生长中
+          </span>
+        </div>
+
+        <div
+          class="relative flex min-h-56 items-center justify-center"
+          aria-hidden="true"
+        >
+          <div class="border-border absolute size-44 rounded-full border"></div>
+          <div
+            class="border-accent/60 absolute size-28 rotate-45 rounded-[2.2rem] border"
+          >
           </div>
-        )
-      }
+          <div
+            class="bg-accent absolute size-3 rounded-full shadow-[0_0_28px_var(--accent)]"
+          >
+          </div>
+          <span
+            class="font-display text-muted-foreground absolute top-12 left-2 text-6xl italic opacity-20"
+            >M</span
+          >
+          <span
+            class="absolute right-1 bottom-8 font-mono text-[0.65rem] tracking-[0.2em]"
+            >THINK · MAKE · NOTE</span
+          >
+        </div>
+
+        <div class="border-border grid grid-cols-3 border-t pt-5 text-center">
+          <div>
+            <strong class="font-display block text-2xl font-normal"
+              >{String(sortedPosts.length).padStart(2, "0")}</strong
+            >
+            <span
+              class="text-muted-foreground font-mono text-[0.65rem] tracking-wider"
+              >文章</span
+            >
+          </div>
+          <div class="border-border border-x">
+            <strong class="font-display block text-2xl font-normal"
+              >{String(uniqueTags.length).padStart(2, "0")}</strong
+            >
+            <span
+              class="text-muted-foreground font-mono text-[0.65rem] tracking-wider"
+              >标签</span
+            >
+          </div>
+          <div>
+            <strong class="font-display block text-2xl font-normal">∞</strong>
+            <span
+              class="text-muted-foreground font-mono text-[0.65rem] tracking-wider"
+              >好奇心</span
+            >
+          </div>
+        </div>
+      </aside>
     </section>
 
     {
       featuredPosts.length > 0 && (
-        <section
-          id="featured"
-          class:list={[
-            "pt-12 pb-6",
-            { "border-border border-b": recentPosts.length > 0 },
-          ]}
-        >
-          <h2 class="text-2xl font-semibold tracking-wide">
-            {t.home.featured}
-          </h2>
+        <section id="featured" class="reveal reveal-delay-2 py-12 sm:py-16">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">01 / SELECTED</span>
+              <h2 class="display-title mt-2 text-4xl sm:text-5xl">
+                {t.home.featured}
+              </h2>
+            </div>
+            <span class="text-muted-foreground hidden font-mono text-xs sm:block">
+              EDITOR'S PICK
+            </span>
+          </div>
           <ul>
             {featuredPosts.map(data => (
               <Card variant="h3" {...data} />
@@ -98,10 +173,21 @@ const homePath = getRelativeLocaleUrl(locale, "");
 
     {
       recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">
-            {t.home.recentPosts}
-          </h2>
+        <section id="recent-posts" class="py-12 sm:py-16">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">02 / LATEST</span>
+              <h2 class="display-title mt-2 text-4xl sm:text-5xl">
+                {t.home.recentPosts}
+              </h2>
+            </div>
+            <LinkButton
+              href={postsPath}
+              class="text-muted-foreground hover:text-accent hidden text-sm sm:flex"
+            >
+              全部文章 <IconArrowRight class="size-4" />
+            </LinkButton>
+          </div>
           <ul>
             {recentPosts.slice(0, postsConfig.perIndex).map(data => (
               <Card variant="h3" {...data} />
@@ -111,12 +197,25 @@ const homePath = getRelativeLocaleUrl(locale, "");
       )
     }
 
-    <div class="my-8 text-center">
-      <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
-        {t.home.allPosts}
-        <IconArrowRight class="inline-block rtl:-rotate-180" />
-      </LinkButton>
-    </div>
+    <section
+      class="paper-panel my-14 flex flex-col items-start justify-between gap-8 rounded-[2rem] p-8 sm:flex-row sm:items-end sm:p-12"
+    >
+      <div>
+        <span class="eyebrow">KEEP EXPLORING</span>
+        <h2
+          class="display-title mt-3 max-w-2xl text-4xl leading-tight sm:text-5xl"
+        >
+          好奇心会带我们<br class="hidden sm:block" />去更远的地方。
+        </h2>
+      </div>
+      <div class="flex flex-col items-start gap-4 sm:items-end">
+        {socials.length > 0 && <Socials />}
+        <LinkButton href={postsPath} class="button-primary whitespace-nowrap">
+          {t.home.allPosts}
+          <IconArrowRight class="size-4" />
+        </LinkButton>
+      </div>
+    </section>
   </main>
   <Footer />
 </Layout>

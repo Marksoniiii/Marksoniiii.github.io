@@ -4,6 +4,9 @@
   /* ===== Override default Tailwind Typography styles ===== */
   .app-prose {
     @apply prose;
+    max-width: 46rem;
+    font-size: 1.04rem;
+    line-height: 1.88;
 
     h1,
     h2,
@@ -11,10 +14,12 @@
     h4,
     th {
       @apply text-foreground mb-3;
+      font-family: var(--font-display-family);
+      letter-spacing: -0.025em;
     }
 
     h3 {
-      @apply italic;
+      @apply not-italic;
     }
 
     p,
@@ -44,7 +49,9 @@
     }
 
     img {
-      @apply border-border mx-auto border;
+      @apply border-border mx-auto rounded-xl border;
+      box-shadow: 0 14px 40px
+        color-mix(in srgb, var(--foreground) 10%, transparent);
     }
 
     img[role="button"] {
@@ -79,7 +86,8 @@
     }
 
     blockquote {
-      @apply border-s-accent/80 wrap-break-word opacity-80;
+      @apply border-s-accent/80 rounded-e-lg py-1 wrap-break-word opacity-90;
+      background: color-mix(in srgb, var(--muted) 55%, transparent);
     }
 
     details:not(.callout) {

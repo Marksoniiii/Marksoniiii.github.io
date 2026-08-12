@@ -11,14 +11,23 @@ const posts = defineCollection({
     z.object({
       author: z.string().default(config.site.author),
       pubDatetime: z.date(),
-      modDatetime: z.date().optional().nullable(),
-      title: z.string(),
-      featured: z.boolean().optional(),
-      draft: z.boolean().optional(),
-      tags: z.array(z.string()).default(["others"]),
-      ogImage: image().or(z.string()).optional(),
-      description: z.string(),
-      canonicalURL: z.string().optional(),
+      modDatetime: z.preprocess(
+        value => (value === "" ? undefined : value),
+        z.date().optional().nullable()
+      ),
+      title: z.string().trim().min(1).max(120),
+      featured: z.boolean().default(false),
+      draft: z.boolean().default(true),
+      tags: z.array(z.string().trim().min(1)).min(1).default(["其他"]),
+      ogImage: z.preprocess(
+        value => (value === "" ? undefined : value),
+        image().or(z.string()).optional()
+      ),
+      description: z.string().trim().min(1).max(240),
+      canonicalURL: z.preprocess(
+        value => (value === "" ? undefined : value),
+        z.url().optional()
+      ),
       hideEditPost: z.boolean().optional(),
       timezone: z.string().optional(),
     }),

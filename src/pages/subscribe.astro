@@ -1,0 +1,87 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import IconRss from "@/assets/icons/IconRss.svg";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Main from "@/components/Main.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import config from "@/config";
+
+const locale = Astro.currentLocale ?? config.site.lang;
+const rssUrl = new URL(
+  `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`,
+  Astro.site ?? Astro.url
+).href;
+---
+
+<Layout
+  title={`订阅更新 | ${config.site.title}`}
+  description="通过 RSS 订阅 Markson 的最新文章。"
+>
+  <Header />
+  <Breadcrumb />
+  <Main
+    pageTitle="订阅更新"
+    pageDesc="没有算法推荐，也不会收集你的邮箱；更新会按时间顺序抵达。"
+  >
+    <section class="paper-panel rounded-[2rem] p-7 sm:p-10">
+      <div
+        class="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div class="max-w-2xl">
+          <span class="eyebrow">RSS / OPEN SUBSCRIPTION</span>
+          <h2 class="display-title mt-3 text-3xl sm:text-4xl">
+            使用你喜欢的阅读器
+          </h2>
+          <p class="text-muted-foreground mt-4 leading-8">
+            复制下面的订阅地址，添加到 Folo、Feedly、NetNewsWire、Fluent Reader
+            或其他支持 RSS 的应用。订阅源包含文章全文、标签和更新时间。
+          </p>
+        </div>
+        <IconRss class="text-accent size-16 shrink-0 stroke-current" />
+      </div>
+
+      <div
+        class="border-border bg-background mt-8 flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center"
+      >
+        <code
+          id="rss-url"
+          class="min-w-0 flex-1 overflow-x-auto bg-transparent p-0 text-sm"
+          >{rssUrl}</code
+        >
+        <button id="copy-rss" class="button-primary shrink-0" type="button"
+          >复制地址</button
+        >
+      </div>
+
+      <div class="mt-7 flex flex-wrap gap-3">
+        <LinkButton href={rssUrl} class="button-secondary"
+          >直接打开 RSS</LinkButton
+        >
+        <LinkButton
+          href={getRelativeLocaleUrl(locale, "posts")}
+          class="button-secondary">浏览全部文章</LinkButton
+        >
+      </div>
+    </section>
+  </Main>
+  <Footer />
+</Layout>
+
+<script>
+  function setupCopyButton() {
+    const button = document.querySelector<HTMLButtonElement>("#copy-rss");
+    const url = document.querySelector<HTMLElement>("#rss-url")?.textContent;
+    if (!button || !url) return;
+    button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(url);
+      const original = button.textContent;
+      button.textContent = "已复制";
+      setTimeout(() => (button.textContent = original), 1200);
+    });
+  }
+  setupCopyButton();
+  document.addEventListener("astro:after-swap", setupCopyButton);
+</script>

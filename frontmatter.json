@@ -1,0 +1,84 @@
+{
+  "$schema": "https://frontmatter.codes/frontmatter.schema.json",
+  "frontMatter.framework.id": "astro",
+  "frontMatter.content.pageFolders": [
+    {
+      "title": "博客文章",
+      "path": "[[workspace]]/src/content/posts",
+      "excludeSubdir": true,
+      "previewPath": "posts"
+    }
+  ],
+  "frontMatter.content.publicFolder": "public",
+  "frontMatter.content.defaultFileType": "md",
+  "frontMatter.content.autoUpdateDate": true,
+  "frontMatter.preview.host": "http://localhost:4321",
+  "frontMatter.preview.pathName": "posts",
+  "frontMatter.taxonomy.contentTypes": [
+    {
+      "name": "default",
+      "pageBundle": false,
+      "clearEmpty": true,
+      "defaultFileName": "{{slug}}",
+      "template": "[[workspace]]/.frontmatter/templates/article.md",
+      "fields": [
+        {
+          "title": "标题",
+          "name": "title",
+          "type": "string",
+          "single": true,
+          "required": true
+        },
+        {
+          "title": "摘要",
+          "name": "description",
+          "type": "string",
+          "required": true
+        },
+        {
+          "title": "发布时间",
+          "name": "pubDatetime",
+          "type": "datetime",
+          "default": "{{now}}",
+          "isPublishDate": true,
+          "required": true
+        },
+        {
+          "title": "更新时间",
+          "name": "modDatetime",
+          "type": "datetime",
+          "isModifiedDate": true
+        },
+        {
+          "title": "草稿",
+          "name": "draft",
+          "type": "draft",
+          "default": true
+        },
+        {
+          "title": "首页精选",
+          "name": "featured",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "title": "标签",
+          "name": "tags",
+          "type": "tags",
+          "required": true
+        },
+        {
+          "title": "分享封面",
+          "name": "ogImage",
+          "type": "image"
+        },
+        {
+          "title": "原文地址",
+          "name": "canonicalURL",
+          "type": "string",
+          "single": true
+        }
+      ]
+    }
+  ]
+}
