@@ -4,7 +4,8 @@ export default defineAstroPaperConfig({
   site: {
     url: "https://marksoniiii.github.io/",
     title: "Marksoniii's Blog",
-    description: "Marksoniii 的个人数字花园，记录学习、实验与生活中的未完成思考。",
+    description:
+      "Marksoniii 的个人数字花园，记录学习、实验与生活中的未完成思考。",
     author: "Marksoniii",
     profile: "https://marksoniiii.github.io/",
     ogImage: "default-og.jpg",

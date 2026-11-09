@@ -42,8 +42,46 @@
     letter-spacing: -0.012em;
   }
 
+  /* Fine film grain over the whole page: keeps the paper texture alive. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    opacity: 0.045;
+    mix-blend-mode: multiply;
+  }
+
+  [data-theme="dark"] body::after {
+    opacity: 0.035;
+    mix-blend-mode: screen;
+  }
+
   ::selection {
     text-shadow: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--foreground) 22%, transparent);
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
   }
 }
 
@@ -136,6 +174,115 @@
   .article-card:focus-within .article-card__arrow {
     @apply border-accent bg-accent text-accent-foreground;
     transform: translate(2px, -2px);
+  }
+
+  /* Blinking caret that trails the wordmark. */
+  .logo-caret {
+    @apply bg-accent ms-1 inline-block h-[1.05em] w-[3px] align-baseline;
+    animation: caret-blink 1.15s linear infinite;
+  }
+
+  /* Sliding underline for the desktop text nav. */
+  #menu-items a:not(:has(svg)) {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 50% calc(100% - 0.1em);
+    background-size: 0% 1px;
+    transition:
+      background-size 0.3s ease,
+      color 0.2s ease;
+  }
+
+  #menu-items a:not(:has(svg)):hover {
+    background-size: 55% 1px;
+  }
+
+  /* Gradient hairline used instead of a plain border on the footer. */
+  .hairline-t {
+    position: relative;
+  }
+
+  .hairline-t::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--accent) 40%, var(--border)) 35%,
+      var(--border) 65%,
+      transparent
+    );
+  }
+
+  /* Reading-progress bar: accent gradient with a soft glow. */
+  .progress-bar {
+    background-image: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 45%, var(--accent-2)),
+      var(--accent)
+    );
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  /* Copy button fades in only while the code block is engaged. */
+  .copy-code {
+    @apply translate-y-0.5 opacity-0 transition-all duration-200;
+  }
+
+  .astro-code:hover .copy-code,
+  .astro-code:focus-within .copy-code,
+  .copy-code:focus-visible {
+    @apply translate-y-0 opacity-100;
+  }
+
+  @media (hover: none) {
+    .copy-code {
+      @apply opacity-100;
+    }
+  }
+
+  /* Gradient text for the hero accent word. */
+  .hero-accent {
+    background-image: linear-gradient(
+      115deg,
+      var(--accent) 25%,
+      var(--accent-2)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes caret-blink {
+    0%,
+    45% {
+      opacity: 1;
+    }
+
+    50%,
+    95% {
+      opacity: 0;
+    }
+  }
+
+  /* Slow rotation for the hero ornament square. */
+  .ornament-rotate {
+    animation: ornament-spin 16s linear infinite;
+  }
+
+  @keyframes ornament-spin {
+    from {
+      transform: rotate(45deg);
+    }
+
+    to {
+      transform: rotate(405deg);
+    }
   }
 }
 

@@ -105,7 +105,11 @@
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply outline-border flex border bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
+    @apply outline-border flex rounded-xl border bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
+    border-color: var(--border);
+    box-shadow:
+      0 10px 30px color-mix(in srgb, var(--foreground) 6%, transparent),
+      0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent) inset;
   }
 
   html[data-theme="dark"] .astro-code {
